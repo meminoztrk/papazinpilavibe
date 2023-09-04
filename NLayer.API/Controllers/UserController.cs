@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using NLayer.Core.DTOs;
+using NLayer.Core.DTOs.UserDTOs;
 using NLayer.Core.Models;
 using NLayer.Core.Services;
 using NLayer.Service.Services;
@@ -21,49 +22,75 @@ namespace NLayer.API.Controllers
             _jwtService = jwtService;
         }
 
+        [HttpPost("gSign")]
+        public async Task<IActionResult> gSign(UserGoogleRegisterDto userGoogleRegisterDto)
+        {
+            if(!_userService.UniqueEmail(userGoogleRegisterDto.Email))
+            {
+                var user = _userService.GetByUsername(userGoogleRegisterDto.Email);
+
+                if (user == null) return BadRequest(new { message = "Invalid Credentials" });
+
+                if (!BCrypt.Net.BCrypt.Verify(userGoogleRegisterDto.GoogleCredential, user.GoogleCredential))
+                {
+                    return BadRequest(new { message = "Invalid Credentials" });
+                }
+
+                var userWithTokenLogin = _mapper.Map<UserWithTokenDto>(user);
+                userWithTokenLogin.Token = _jwtService.Generate(userWithTokenLogin.Id);
+
+                return CreateActionResult(CustomResponseDto<UserWithTokenDto>.Success(201, userWithTokenLogin));
+            }
+
+            userGoogleRegisterDto.GoogleCredential = BCrypt.Net.BCrypt.HashPassword(userGoogleRegisterDto.GoogleCredential);
+            var adduser = await _userService.AddAsync(_mapper.Map<User>(userGoogleRegisterDto));
+            var userWithTokenRegister = _mapper.Map<UserWithTokenDto>(adduser);
+
+            userWithTokenRegister.Token = _jwtService.Generate(userWithTokenRegister.Id);
+
+            return CreateActionResult(CustomResponseDto<UserWithTokenDto>.Success(201, userWithTokenRegister));
+        }
+
         [HttpPost("register")]
         public async Task<IActionResult> Register(UserRegisterDto userRegisterDto)
         {
             userRegisterDto.Password = BCrypt.Net.BCrypt.HashPassword(userRegisterDto.Password);
             var user = await _userService.AddAsync(_mapper.Map<User>(userRegisterDto));
+            var userWithToken = _mapper.Map<UserWithTokenDto>(user);
 
-            return CreateActionResult(CustomResponseDto<User>.Success(201, user));
+            userWithToken.Token = _jwtService.Generate(userWithToken.Id);
+
+            return CreateActionResult(CustomResponseDto<UserWithTokenDto>.Success(201, userWithToken));
         }
 
         [HttpPost("login")]
         public async Task<IActionResult> Login(UserLoginDto userLoginDto)
         {
-            var user =  _userService.GetByUsername(userLoginDto.Email);
+            var user = _userService.GetByUsername(userLoginDto.Email);        
 
-            if (user == null) return BadRequest(new { message = "Invalid Credentials" });
+            if (user == null) return BadRequest(CustomResponseDto<NoContentDto>.Fail(400, "Böyle bir kullanıcı yok!"));
+
+            if (user.IsGoogle)
+            {
+                return CreateActionResult(CustomResponseDto<NoContentDto>.Fail(400, "Google hesabı ile giriş yapın!"));
+            }
 
             if (!BCrypt.Net.BCrypt.Verify(userLoginDto.Password, user.Password))
             {
-                return BadRequest(new { message = "Invalid Credentials" });
+                return BadRequest(CustomResponseDto<NoContentDto>.Fail(400, "E-posta veya parola yanlış!"));
             }
 
-            var jwt =  _jwtService.Generate(user.Id);
+            var userWithTokenLogin = _mapper.Map<UserWithTokenDto>(user);
+            userWithTokenLogin.Token = _jwtService.Generate(userWithTokenLogin.Id);
 
-            Response.Cookies.Append("jwt", jwt, new CookieOptions
-            {
-                //HttpOnly = true,
-                Expires = DateTime.UtcNow.AddDays(10),
-                IsEssential = true,
-                SameSite = SameSiteMode.Lax,
-                //Secure = true
-            });
-
-            var userDto = _mapper.Map<UserDto>(user);
-            return CreateActionResult(CustomResponseDto<UserDto>.Success(200, userDto));
+            return CreateActionResult(CustomResponseDto<UserWithTokenDto>.Success(201, userWithTokenLogin));
         }
 
         [HttpGet("user")]
-        public async Task<IActionResult> User()
+        public async Task<IActionResult> User(string jwt)
         {
             try
             {
-                var jwt = Request.Cookies["jwt"];
-
                 var token = _jwtService.Verify(jwt);
 
                 int id = int.Parse(token.Issuer);
@@ -77,7 +104,6 @@ namespace NLayer.API.Controllers
             {
                 return Unauthorized();
             }
-
         }
 
         [HttpPost("logout")]

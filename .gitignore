@@ -3,7 +3,6 @@
 ##
 ## Get latest from https://github.com/github/gitignore/blob/master/VisualStudio.gitignore
 NLayer.API/appsettings.json
-NLayer.API/appsettings2.json
 # User-specific files
 *.rsuser
 *.suo

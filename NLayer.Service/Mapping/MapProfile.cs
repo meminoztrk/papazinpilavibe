@@ -2,6 +2,7 @@
 using NLayer.Core;
 using NLayer.Core.DTOs;
 using NLayer.Core.DTOs.About;
+using NLayer.Core.DTOs.UserDTOs;
 using NLayer.Core.Models;
 using System;
 using System.Collections.Generic;
@@ -17,7 +18,10 @@ namespace NLayer.Service.Mapping
         {
 
             CreateMap<User, UserRegisterDto>().ReverseMap();
+            CreateMap<User, UserGoogleRegisterDto>().ReverseMap();
+            CreateMap<User, UserGoogleRegisterDto>();
             CreateMap<User, UserDto>().ReverseMap();
+            CreateMap<User, UserWithTokenDto>();
 
             CreateMap<About, AboutDto>();
         }

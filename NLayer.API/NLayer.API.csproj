@@ -7,6 +7,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="wwwroot\img\product\**" />
+    <Content Remove="wwwroot\img\product\**" />
+    <EmbeddedResource Remove="wwwroot\img\product\**" />
+    <None Remove="wwwroot\img\product\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Autofac.Extensions.DependencyInjection" Version="7.2.0" />
     <PackageReference Include="AutoMapper" Version="11.0.0" />
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="11.0.0" />
@@ -25,10 +32,6 @@
   <ItemGroup>
     <ProjectReference Include="..\NLayer.Catching\NLayer.Caching.csproj" />
     <ProjectReference Include="..\NLayer.Service\NLayer.Service.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="wwwroot\img\product\" />
   </ItemGroup>
 
 </Project>

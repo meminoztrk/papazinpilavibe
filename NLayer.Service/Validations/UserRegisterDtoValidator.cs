@@ -18,16 +18,15 @@ namespace NLayer.Service.Validations
             _userService = userService;
             RuleFor(x => x.Name).NotNull().WithMessage("{PropertyName} is required").NotEmpty().WithMessage("{PropertyName} is required");
             RuleFor(x => x.Surname).NotNull().WithMessage("{PropertyName} is required").NotEmpty().WithMessage("{PropertyName} is required");
-            RuleFor(x => x.Phone).NotNull().WithMessage("{PropertyName} is required").NotEmpty().WithMessage("{PropertyName} is required");
             RuleFor(x => x.Email).NotNull().WithMessage("{PropertyName} is required").NotEmpty().WithMessage("{PropertyName} is required")
                 .EmailAddress().WithMessage("Invalid email format.")
-                .Must(_userService.UniqueEmail).WithMessage("Such a {PropertyName} already exists ");
-            RuleFor(x => x.Password).NotNull().WithMessage("{PropertyName} is required").NotEmpty().WithMessage("{PropertyName} is required")
-                .MinimumLength(8).WithMessage("'{PropertyName}' must min eight chracter.")
-                .MaximumLength(15).WithMessage("'{PropertyName}' must max fifteen chracter.")
-                .Matches("[A-Z]").WithMessage("'{PropertyName}' must contain one or more capital letters.")
-                .Matches("[a-z]").WithMessage("'{PropertyName}' must contain one or more lowercase letters.")
-                .Matches(@"\d").WithMessage("'{PropertyName}' must contain one or more digits.");
+                .Must(_userService.UniqueEmail).WithMessage("Böyle bir E-Posta zaten mevcut!");
+            RuleFor(x => x.Password).NotNull().WithMessage("{PropertyName} is required").NotEmpty().WithMessage("{PropertyName} is required");
+                //.MinimumLength(8).WithMessage("'{PropertyName}' must min eight chracter.")
+                //.MaximumLength(15).WithMessage("'{PropertyName}' must max fifteen chracter.")
+                //.Matches("[A-Z]").WithMessage("'{PropertyName}' must contain one or more capital letters.")
+                //.Matches("[a-z]").WithMessage("'{PropertyName}' must contain one or more lowercase letters.")
+                //.Matches(@"\d").WithMessage("'{PropertyName}' must contain one or more digits.");
                 //.Matches(@"[][""!@$%^&*(){}:;<>,.?/+_=|'~\\-]").WithMessage("'{PropertyName}' must contain one or more special characters.");
         }
 

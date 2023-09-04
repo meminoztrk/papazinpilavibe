@@ -17,12 +17,12 @@ namespace NLayer.Repository.Repositories
 
         public User  GetByUsername(string mail)
         {
-            return _context.Users.FirstOrDefault(x => x.Username == mail);  
+            return _context.Users.FirstOrDefault(x => x.Email == mail);  
         }
 
         public bool UniqueUsername(string text)
         {
-            bool s = !_context.Users.Any(u => u.Username.Trim().ToLower() == text.Trim().ToLower());
+            bool s = !_context.Users.Any(u => u.Email.Trim().ToLower() == text.Trim().ToLower());
             return s;
         }
 
