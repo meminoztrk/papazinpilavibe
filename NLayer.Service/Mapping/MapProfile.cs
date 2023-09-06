@@ -22,6 +22,8 @@ namespace NLayer.Service.Mapping
             CreateMap<User, UserGoogleRegisterDto>();
             CreateMap<User, UserDto>().ReverseMap();
             CreateMap<User, UserWithTokenDto>();
+            CreateMap<User, UserUpdateDto>().ReverseMap();
+            CreateMap<User, User>();
 
             CreateMap<About, AboutDto>();
         }

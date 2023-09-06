@@ -18,6 +18,7 @@ using Autofac;
 using NLayer.API.Modules;
 using Microsoft.AspNetCore.Authentication.Certificate;
 using Newtonsoft.Json;
+using NLayer.API.Generic;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -38,6 +39,7 @@ builder.Services.AddCors();
 
 builder.Services.AddScoped(typeof(NotFoundFilter<>));
 builder.Services.AddScoped<JwtService>();
+builder.Services.AddScoped<CustomImageProcessing>();
 
 builder.Services.AddAutoMapper(typeof(MapProfile));
 

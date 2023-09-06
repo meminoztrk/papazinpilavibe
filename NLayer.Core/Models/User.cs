@@ -23,6 +23,7 @@ namespace NLayer.Core.Models
         public bool IsUser { get; set; }
         public bool IsGoogle { get; set; }
         public string GoogleCredential { get; set; }
+        public string UserId { get; set; } = Guid.NewGuid().ToString("N");
         [JsonIgnore] public string Password { get; set; }
     }
 }

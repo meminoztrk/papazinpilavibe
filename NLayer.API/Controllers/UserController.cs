@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
+using NLayer.API.Generic;
 using NLayer.Core.DTOs;
 using NLayer.Core.DTOs.UserDTOs;
 using NLayer.Core.Models;
@@ -14,12 +15,27 @@ namespace NLayer.API.Controllers
         private readonly IMapper _mapper;
         private readonly IUserService _userService;
         private readonly JwtService _jwtService;
+        private readonly CustomImageProcessing _image;
 
-        public UserController(IMapper mapper, IUserService userService, JwtService jwtService)
+        public UserController(IMapper mapper, IUserService userService, JwtService jwtService, CustomImageProcessing image)
         {
             _mapper = mapper;
             _userService = userService;
             _jwtService = jwtService;
+            _image = image;
+        }
+
+        [HttpPut]
+        public async Task<IActionResult> UpdateUser(string id, [FromForm] UserUpdateDto userUpdateDto, List<IFormFile> uploadImage)
+        {      
+            var user = _userService.Where(x=>x.UserId == id).FirstOrDefault();
+            var imageList = await _image.ImageProcessing(uploadImage, "user", user.UserPhoto != "defaultuser.png", user.UserPhoto);
+            var updatedUser = _mapper.Map<UserUpdateDto, User>(userUpdateDto, user);
+            updatedUser.UserPhoto = imageList.Count() > 0 ? imageList.FirstOrDefault() : updatedUser.UserPhoto;
+            await _userService.UpdateAsync(updatedUser);
+            var userWithTokenLogin = _mapper.Map<UserWithTokenDto>(updatedUser);
+            userWithTokenLogin.Token = _jwtService.Generate(user.Id);
+            return CreateActionResult(CustomResponseDto<UserWithTokenDto>.Success(201, userWithTokenLogin));
         }
 
         [HttpPost("gSign")]
@@ -37,7 +53,7 @@ namespace NLayer.API.Controllers
                 }
 
                 var userWithTokenLogin = _mapper.Map<UserWithTokenDto>(user);
-                userWithTokenLogin.Token = _jwtService.Generate(userWithTokenLogin.Id);
+                userWithTokenLogin.Token = _jwtService.Generate(user.Id);
 
                 return CreateActionResult(CustomResponseDto<UserWithTokenDto>.Success(201, userWithTokenLogin));
             }
@@ -46,7 +62,7 @@ namespace NLayer.API.Controllers
             var adduser = await _userService.AddAsync(_mapper.Map<User>(userGoogleRegisterDto));
             var userWithTokenRegister = _mapper.Map<UserWithTokenDto>(adduser);
 
-            userWithTokenRegister.Token = _jwtService.Generate(userWithTokenRegister.Id);
+            userWithTokenRegister.Token = _jwtService.Generate(adduser.Id);
 
             return CreateActionResult(CustomResponseDto<UserWithTokenDto>.Success(201, userWithTokenRegister));
         }
@@ -58,7 +74,7 @@ namespace NLayer.API.Controllers
             var user = await _userService.AddAsync(_mapper.Map<User>(userRegisterDto));
             var userWithToken = _mapper.Map<UserWithTokenDto>(user);
 
-            userWithToken.Token = _jwtService.Generate(userWithToken.Id);
+            userWithToken.Token = _jwtService.Generate(user.Id);
 
             return CreateActionResult(CustomResponseDto<UserWithTokenDto>.Success(201, userWithToken));
         }
@@ -81,7 +97,7 @@ namespace NLayer.API.Controllers
             }
 
             var userWithTokenLogin = _mapper.Map<UserWithTokenDto>(user);
-            userWithTokenLogin.Token = _jwtService.Generate(userWithTokenLogin.Id);
+            userWithTokenLogin.Token = _jwtService.Generate(user.Id);
 
             return CreateActionResult(CustomResponseDto<UserWithTokenDto>.Success(201, userWithTokenLogin));
         }
@@ -96,7 +112,7 @@ namespace NLayer.API.Controllers
                 int id = int.Parse(token.Issuer);
 
                 var getuser = await _userService.GetByIdAsync(id);
-                var user = _mapper.Map<UserDto>(getuser);
+                var user = _mapper.Map<UserWithTokenDto>(getuser);
 
                 return Ok(user);
             }

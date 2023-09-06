@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using NLayer.Core.DTOs;
 using NLayer.Core.DTOs.ProvinceDTOs;
 using NLayer.Core.Models;
@@ -24,6 +25,13 @@ namespace NLayer.API.Controllers
         public async Task<IActionResult> GetSearchingProvinces(string value)
         {
             return CreateActionResult(await _provinceService.GetSearchingProvinces(value));
+        }
+
+        [HttpGet("[action]")]
+        public async Task<IActionResult> GetProvinces()
+        {
+            var data = await _provinceService.Where(x => x.UstID == 0 || x.MahalleID != null).ToListAsync();
+            return CreateActionResult(CustomResponseDto<List<Province>>.Success(200, data));
         }
 
         [HttpGet("[action]")]
