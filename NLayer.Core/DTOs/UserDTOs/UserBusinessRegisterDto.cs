@@ -4,16 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace NLayer.Core.DTOs
+namespace NLayer.Core.DTOs.UserDTOs
 {
-    public class UserRegisterDto
+    public class UserBusinessRegisterDto
     {
         public string Name { get; set; }
         public string Surname { get; set; }
         public string Email { get; set; }
-        public string Phone { get; set; }
-        public string Password { get; set; }
-        public bool IsUser => true;
-        public bool IsBusiness { get; set; } = false;
+        public bool IsBusiness => true;
     }
 }
