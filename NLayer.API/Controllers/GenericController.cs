@@ -28,10 +28,10 @@ namespace NLayer.API.Controllers
         }
 
         [HttpGet("[action]")]
-        public async Task<IActionResult> GetProvinces()
+        public async Task<IActionResult> GetProvinces(int id)
         {
-            var data = await _provinceService.Where(x => x.UstID == 0 || x.MahalleID != null).ToListAsync();
-            return CreateActionResult(CustomResponseDto<List<Province>>.Success(200, data));
+            var data = await _provinceService.Where(x=>x.UstID == id).Select(y => new { Id = y.Id, sehirIlceMahalleAdi = y.SehirIlceMahalleAdi }).ToListAsync();
+            return Ok(data);
         }
 
         [HttpGet("[action]")]
