@@ -10,9 +10,9 @@ using System.Threading.Tasks;
 
 namespace NLayer.Service.Services
 {
-    public class StockService : Service<Stock>, IStockService
+    public class BusinessImageService : Service<BusinessImage>, IBusinessImageService
     {
-        public StockService(IGenericRepository<Stock> repository, IUnitOfWork unitOfWork) : base(repository, unitOfWork)
+        public BusinessImageService(IGenericRepository<BusinessImage> repository, IUnitOfWork unitOfWork) : base(repository, unitOfWork)
         {
         }
     }

@@ -8,9 +8,9 @@ using System.Threading.Tasks;
 
 namespace NLayer.Repository.Repositories
 {
-    public class StockRepository : GenericRepository<Stock>, IStockRepository
+    public class BusinessImageRepository : GenericRepository<BusinessImage>, IBusinessImageRepository
     {
-        public StockRepository(AppDbContext context) : base(context)
+        public BusinessImageRepository(AppDbContext context) : base(context)
         {
         }
     }

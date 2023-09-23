@@ -18,7 +18,7 @@ using Autofac;
 using NLayer.API.Modules;
 using Microsoft.AspNetCore.Authentication.Certificate;
 using Newtonsoft.Json;
-using NLayer.API.Generic;
+using NLayer.Service.Helper;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -71,7 +71,7 @@ if (app.Environment.IsDevelopment() || app.Environment.IsProduction())
     app.UseSwaggerUI();
 }
 
-//app.UseHttpsRedirection();
+//app.UseHttpsRedirection();    
 app.UseStaticFiles();
 app.UseCustomException();
 

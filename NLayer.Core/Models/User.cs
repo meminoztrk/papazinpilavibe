@@ -25,5 +25,6 @@ namespace NLayer.Core.Models
         public string GoogleCredential { get; set; }
         public string UserId { get; set; } = Guid.NewGuid().ToString("N");
         [JsonIgnore] public string Password { get; set; }
+        public ICollection<Business> Businesses { get; set; }
     }
 }

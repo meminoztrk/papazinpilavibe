@@ -2,6 +2,7 @@
 using NLayer.Core;
 using NLayer.Core.DTOs;
 using NLayer.Core.DTOs.About;
+using NLayer.Core.DTOs.BusinessDTOs;
 using NLayer.Core.DTOs.UserDTOs;
 using NLayer.Core.Models;
 using System;
@@ -24,6 +25,9 @@ namespace NLayer.Service.Mapping
             CreateMap<User, UserWithTokenDto>();
             CreateMap<User, UserUpdateDto>().ReverseMap();
             CreateMap<User, User>();
+
+            CreateMap<Business, BusinessAddDto>().ReverseMap();
+            CreateMap<Business, BusinessUpdateDto>().ReverseMap();
 
             CreateMap<About, AboutDto>();
         }

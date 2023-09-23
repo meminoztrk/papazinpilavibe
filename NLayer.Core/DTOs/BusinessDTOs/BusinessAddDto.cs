@@ -1,13 +1,14 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Http;
+using NLayer.Core.Models;
+using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace NLayer.Core.Models
+namespace NLayer.Core.DTOs.BusinessDTOs
 {
-    public class Business:BaseEntity
+    public class BusinessAddDto
     {
         public string BusinessName { get; set; }
         public string MinHeader { get; set; }
@@ -16,17 +17,15 @@ namespace NLayer.Core.Models
         public string BusinessProps { get; set; }
         public string BusinessServices { get; set; }
         public string Adress { get; set; }
-        public string Process { get; set; }
+        public string Process => "Onay Bekliyor";
         public string Phone { get; set; }
         public string MapIframe { get; set; }
         public string BusinessLicense { get; set; }
         public string CommentTypes { get; set; }
         public string BusinessType { get; set; }
-        public int? ProvinceId { get; set; }
-        public virtual Province Province { get; set; }
-        public int? UserId { get; set; }
-        public virtual User User { get; set; }
-        public bool HasCourier { get; set; }
+        public int ProvinceId { get; set; }
+        public int UserId { get; set; }
+        public string GuidId { get; set; }
         public string Website { get; set; }
         public string Instagram { get; set; }
         public string Facebook { get; set; }
@@ -38,7 +37,8 @@ namespace NLayer.Core.Models
         public string Fr { get; set; }
         public string Sa { get; set; }
         public string Su { get; set; }
-        public int Views { get; set; } = 0;
-        public ICollection<BusinessImage> BusinessImages { get; set; }
+        public List<IFormFile> UploadedImages { get; set; }
+        public List<IFormFile> UploadedLicense { get; set; }
+
     }
 }

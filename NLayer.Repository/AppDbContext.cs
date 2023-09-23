@@ -19,10 +19,12 @@ namespace NLayer.Repository
             
         }
         
-        public DbSet<Stock> Stocks { get; set; }
         public DbSet<User> Users { get; set; }
         public DbSet<Province> Provinces { get; set; }
         public DbSet<About> About { get; set; }
+        public DbSet<Business> Business { get; set; }
+        public DbSet<BusinessImage> BusinessImage { get; set; }
+        public DbSet<BusinessFAQ> BusinessFAQ { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly()); // Bütün Assembly Dosyalarını Çek

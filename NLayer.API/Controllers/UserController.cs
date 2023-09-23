@@ -1,11 +1,11 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
-using NLayer.API.Generic;
 using NLayer.Core.DTOs;
 using NLayer.Core.DTOs.UserDTOs;
 using NLayer.Core.Models;
 using NLayer.Core.Services;
+using NLayer.Service.Helper;
 using NLayer.Service.Services;
 
 namespace NLayer.API.Controllers
@@ -31,7 +31,7 @@ namespace NLayer.API.Controllers
             var user = _userService.Where(x=>x.UserId == id).FirstOrDefault();
             var imageList = await _image.ImageProcessing(uploadImage, "user", user.UserPhoto != "defaultuser.png", user.UserPhoto);
             var updatedUser = _mapper.Map<UserUpdateDto, User>(userUpdateDto, user);
-            updatedUser.UserPhoto = imageList.Count() > 0 ? imageList.FirstOrDefault() : updatedUser.UserPhoto;
+            updatedUser.UserPhoto = imageList.Count() > 0 ? imageList.FirstOrDefault() : "defaultuser.png";
             await _userService.UpdateAsync(updatedUser);
             var userWithTokenLogin = _mapper.Map<UserWithTokenDto>(updatedUser);
             userWithTokenLogin.Token = _jwtService.Generate(user.Id);
@@ -118,7 +118,7 @@ namespace NLayer.API.Controllers
             }
             catch (Exception e)
             {
-                return Unauthorized();
+                return Unauthorized(e);
             }
         }
 

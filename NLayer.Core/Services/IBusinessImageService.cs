@@ -5,9 +5,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace NLayer.Core.Repositories
+namespace NLayer.Core.Services
 {
-    public interface IStockRepository : IGenericRepository<Stock>
+    public interface IBusinessImageService:IService<BusinessImage>
     {
     }
 }
