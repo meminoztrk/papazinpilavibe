@@ -73,6 +73,7 @@ if (app.Environment.IsDevelopment() || app.Environment.IsProduction())
 
 //app.UseHttpsRedirection();    
 app.UseStaticFiles();
+
 app.UseCustomException();
 
 app.UseAuthorization();

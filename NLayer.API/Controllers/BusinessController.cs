@@ -1,7 +1,9 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
+using NLayer.Core.DTOs;
 using NLayer.Core.DTOs.BusinessDTOs;
 using NLayer.Core.Models;
 using NLayer.Core.Services;
@@ -44,9 +46,22 @@ namespace NLayer.API.Controllers
         }
 
         [HttpGet("[action]")]
+        public async Task<IActionResult> GetBusinessesWithCommentById(int id)
+        {
+            return CreateActionResult(await _businessService.GetBusinessesWithCommentById(id));
+        }
+
+        [HttpGet("[action]")]
         public async Task<IActionResult> GetBusinessById(int id)
         {
             return CreateActionResult(await _businessService.GetBusinessById(id));
+        }
+
+        [HttpPatch("{id}")]
+        public async Task<IActionResult> UpdatePatch(int id, JsonPatchDocument entity)
+        {
+            await _businessService.UpdatePatchAsync(id, entity);
+            return CreateActionResult(CustomResponseDto<NoContentDto>.Success(204));
         }
 
         [HttpGet("[action]")]

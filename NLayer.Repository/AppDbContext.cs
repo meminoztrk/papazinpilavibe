@@ -25,6 +25,9 @@ namespace NLayer.Repository
         public DbSet<Business> Business { get; set; }
         public DbSet<BusinessImage> BusinessImage { get; set; }
         public DbSet<BusinessFAQ> BusinessFAQ { get; set; }
+        public DbSet<BusinessComment> BusinessComment { get; set; }
+        public DbSet<BusinessSubComment> BusinessSubComment { get; set; }
+        public DbSet<BusinessUserImage> BusinessUserImage { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly()); // Bütün Assembly Dosyalarını Çek

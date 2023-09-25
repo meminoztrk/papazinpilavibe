@@ -92,6 +92,11 @@ namespace NLayer.Service.Services
             var businessById = await _businessRepository.GetBusinessWithIncludeById(id);
             return CustomResponseDto<BusinessDto>.Success(200, businessById);
         }
-     
+
+        public async Task<CustomResponseDto<BusinessWithCommentDto>> GetBusinessesWithCommentById(int id)
+        {
+            var businessWithCommentById = await _businessRepository.GetBusinessesWithCommentById(id);
+            return CustomResponseDto<BusinessWithCommentDto>.Success(200, businessWithCommentById);
+        }
     }
 }

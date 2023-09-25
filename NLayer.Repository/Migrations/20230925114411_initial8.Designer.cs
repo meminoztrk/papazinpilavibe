@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NLayer.Repository;
 
@@ -11,9 +12,10 @@ using NLayer.Repository;
 namespace NLayer.Repository.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230925114411_initial8")]
+    partial class initial8
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -201,7 +203,7 @@ namespace NLayer.Repository.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
-                    b.Property<int?>("BusinessId")
+                    b.Property<int>("BusinessId")
                         .HasColumnType("int");
 
                     b.Property<string>("Comment")
@@ -219,20 +221,12 @@ namespace NLayer.Repository.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
-                    b.Property<double>("Rate")
-                        .HasColumnType("float");
-
                     b.Property<DateTime?>("UpdatedDate")
                         .HasColumnType("datetime2");
-
-                    b.Property<int?>("UserId")
-                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
                     b.HasIndex("BusinessId");
-
-                    b.HasIndex("UserId");
 
                     b.ToTable("BusinessComment");
                 });
@@ -248,7 +242,7 @@ namespace NLayer.Repository.Migrations
                     b.Property<string>("Answer")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("BusinessId")
+                    b.Property<int>("BusinessId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("CreatedDate")
@@ -306,49 +300,6 @@ namespace NLayer.Repository.Migrations
                     b.ToTable("BusinessImage");
                 });
 
-            modelBuilder.Entity("NLayer.Core.Models.BusinessSubComment", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<int?>("BusinessCommentId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("BusinessId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Comment")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
-
-                    b.Property<DateTime?>("UpdatedDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int?>("UserId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("BusinessCommentId");
-
-                    b.HasIndex("BusinessId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("BusinessSubComment");
-                });
-
             modelBuilder.Entity("NLayer.Core.Models.BusinessUserImage", b =>
                 {
                     b.Property<int>("Id")
@@ -357,10 +308,7 @@ namespace NLayer.Repository.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
-                    b.Property<int?>("BusinessCommentId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("BusinessId")
+                    b.Property<int>("BusinessCommentId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("CreatedDate")
@@ -378,14 +326,12 @@ namespace NLayer.Repository.Migrations
                     b.Property<DateTime?>("UpdatedDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int?>("UserId")
+                    b.Property<int>("UserId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
                     b.HasIndex("BusinessCommentId");
-
-                    b.HasIndex("BusinessId");
 
                     b.HasIndex("UserId");
 
@@ -514,22 +460,20 @@ namespace NLayer.Repository.Migrations
                 {
                     b.HasOne("NLayer.Core.Models.Business", "Business")
                         .WithMany()
-                        .HasForeignKey("BusinessId");
-
-                    b.HasOne("NLayer.Core.Models.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId");
+                        .HasForeignKey("BusinessId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Business");
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("NLayer.Core.Models.BusinessFAQ", b =>
                 {
                     b.HasOne("NLayer.Core.Models.Business", "Business")
                         .WithMany()
-                        .HasForeignKey("BusinessId");
+                        .HasForeignKey("BusinessId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Business");
                 });
@@ -545,42 +489,19 @@ namespace NLayer.Repository.Migrations
                     b.Navigation("Business");
                 });
 
-            modelBuilder.Entity("NLayer.Core.Models.BusinessSubComment", b =>
-                {
-                    b.HasOne("NLayer.Core.Models.BusinessComment", "BusinessComment")
-                        .WithMany()
-                        .HasForeignKey("BusinessCommentId");
-
-                    b.HasOne("NLayer.Core.Models.Business", "Business")
-                        .WithMany()
-                        .HasForeignKey("BusinessId");
-
-                    b.HasOne("NLayer.Core.Models.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId");
-
-                    b.Navigation("Business");
-
-                    b.Navigation("BusinessComment");
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("NLayer.Core.Models.BusinessUserImage", b =>
                 {
                     b.HasOne("NLayer.Core.Models.BusinessComment", "BusinessComment")
                         .WithMany()
-                        .HasForeignKey("BusinessCommentId");
-
-                    b.HasOne("NLayer.Core.Models.Business", "Business")
-                        .WithMany()
-                        .HasForeignKey("BusinessId");
+                        .HasForeignKey("BusinessCommentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("NLayer.Core.Models.User", "User")
                         .WithMany()
-                        .HasForeignKey("UserId");
-
-                    b.Navigation("Business");
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("BusinessComment");
 

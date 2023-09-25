@@ -1,4 +1,5 @@
 ﻿using NLayer.Core.DTOs;
+using NLayer.Core.DTOs.BusinessCommentDTOs;
 using NLayer.Core.DTOs.BusinessDTOs;
 using NLayer.Core.Models;
 using System;
@@ -14,6 +15,7 @@ namespace NLayer.Core.Services
         Task<CustomResponseDto<NoContentDto>> AddBusiness(BusinessAddDto business);
         Task<CustomResponseDto<NoContentDto>> UpdateBusiness(int id, BusinessUpdateDto business);
         Task<CustomResponseDto<List<BusinessByUserDto>>> GetBusinessesByUserId(string userId);
+        Task<CustomResponseDto<BusinessWithCommentDto>> GetBusinessesWithCommentById(int id);
         Task<CustomResponseDto<BusinessDto>> GetBusinessById(int id);
     }
 }

@@ -10,6 +10,7 @@ namespace NLayer.Core.Repositories
 {
     public interface IBusinessRepository:IGenericRepository<Business>
     {
+        Task<BusinessWithCommentDto> GetBusinessesWithCommentById(int id);
         Task<List<BusinessByUserDto>> GetBusinessesWithIncludeByUserId(int id);
         Task<BusinessDto> GetBusinessWithIncludeById(int id);
     }
