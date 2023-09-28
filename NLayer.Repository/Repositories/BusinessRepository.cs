@@ -7,9 +7,11 @@ using NLayer.Core.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 
 namespace NLayer.Repository.Repositories
 {
@@ -19,13 +21,77 @@ namespace NLayer.Repository.Repositories
         {
         }
 
+        public async Task<List<BusinessCommentDto>> GetBusinessCommentsWithPaginationById(int id, int page, int take, bool isAsc, string commentType, int rate, string search)
+        {
+            var listed = _context.BusinessComment.Where(x => x.IsActive && !x.IsDeleted && x.BusinessId == id && (string.IsNullOrEmpty(search) || x.Comment.ToLower().Contains(search.Trim().ToLower()))).Select(x => new BusinessCommentDto
+            {
+                Id = x.Id,
+                BusinessId = x.Id,
+                Name = x.User.Name,
+                Surname = x.User.Surname,
+                UserId = x.User.UserId,
+                UserImage = x.User.UserPhoto,
+                TotalComment = _context.BusinessComment.Count(y => y.UserId == x.UserId && y.IsActive && !y.IsDeleted),
+                Rate = x.Rate,
+                Comment = x.Comment,
+                CommentType = x.CommentType,
+                Created = x.CreatedDate,
+                Images = x.BusinessUserImages.Select(y => y.Image).ToList(),
+                SubComments = x.BusinessSubComments.Where(y => y.IsActive && !y.IsDeleted).Select(y => new BusinessSubCommentDto
+                {
+                    Id = y.Id,
+                    UserId = _context.Users.Where(y => y.Id == x.UserId.Value).FirstOrDefault().UserId,
+                    Comment = y.Comment,
+                    Created = y.CreatedDate,
+                }).ToList()
+            }).AsNoTracking();
+
+            List<BusinessCommentDto> comments = new List<BusinessCommentDto>();
+
+            switch (true)
+            {
+                case bool n when n == (isAsc && string.IsNullOrEmpty(commentType) && rate == 0): //111
+                    comments = await listed.Skip((page - 1) * page).Take(take).ToListAsync();
+                    break;
+                case bool n when n == (isAsc && string.IsNullOrEmpty(commentType) && rate != 0)://110
+                    comments = await listed.Where(x=>x.Rate==rate).Skip((page - 1) * page).Take(take).ToListAsync();
+                    break;
+                case bool n when n == (isAsc && !string.IsNullOrEmpty(commentType) && rate == 0)://101
+                    comments = await listed.Where(x=>x.CommentType.Contains(commentType)).Skip((page - 1) * page).Take(take).ToListAsync();
+                    break;
+                case bool n when n == (isAsc && !string.IsNullOrEmpty(commentType) && rate != 0)://100
+                    comments = await listed.Where(x=> x.CommentType.Contains(commentType) && x.Rate == rate).Skip((page - 1) * page).Take(take).ToListAsync();
+                    break;
+                case bool n when n == (!isAsc && !string.IsNullOrEmpty(commentType) && rate != 0)://000
+                    comments = await listed.OrderByDescending(x=>x.Id).Where(x => x.CommentType.Contains(commentType) && x.Rate == rate).Skip((page - 1) * page).Take(take).ToListAsync();
+                    break;
+                case bool n when n == (!isAsc && !string.IsNullOrEmpty(commentType) && rate == 0)://001
+                    comments = await listed.OrderByDescending(x => x.Id).Where(x => x.CommentType.Contains(commentType)).Skip((page - 1) * page).Take(take).ToListAsync();
+                    break;
+                case bool n when n == (!isAsc && string.IsNullOrEmpty(commentType) && rate != 0)://010
+                    comments = await listed.OrderByDescending(x => x.Id).Where(x => x.Rate == rate).Skip((page - 1) * page).Take(take).ToListAsync();
+                    break;
+                case bool n when n == (!isAsc && string.IsNullOrEmpty(commentType) && rate == 0)://011
+                    comments = await listed.OrderByDescending(x => x.Id).Skip((page - 1) * page).Take(take).ToListAsync();
+                    break;
+                default:
+                    comments = await listed.ToListAsync();
+                    break;
+            }
+
+            return comments;
+        }
+
         public async Task<BusinessWithCommentDto> GetBusinessesWithCommentById(int id)
         {
+            var comments = _context.BusinessComment.Where(x => x.IsActive && !x.IsDeleted && x.BusinessId == id);
+            int commentCount = comments.Count();
             return await _context.Business
                 .Include(x => x.User)
                 .Include(x => x.Province)
                 .Include(x => x.BusinessImages)
                 .Include(x => x.BusinessComments.Where(x => x.IsActive && !x.IsDeleted)).ThenInclude(x => x.BusinessUserImages)
+                .Include(x => x.BusinessComments.Where(x => x.IsActive && !x.IsDeleted)).ThenInclude(x => x.User)
                 .Include(x => x.BusinessComments.Where(x => x.IsActive && !x.IsDeleted)).ThenInclude(x => x.BusinessSubComments)
                 .Where(x => x.Id == id && x.IsActive && !x.IsDeleted)
                 .Select(x => new BusinessWithCommentDto
@@ -61,13 +127,24 @@ namespace NLayer.Repository.Repositories
                     Fr = x.Fr,
                     Sa = x.Sa,
                     Su = x.Su,
+                    CommentCount = commentCount,
+                    FivePercent = commentCount > 0 ? comments.Count(y => y.Rate == 5) * 100 / commentCount : 0,
+                    FourPercent = commentCount > 0 ? comments.Count(y => y.Rate == 4) * 100 / commentCount : 0,
+                    ThreePercent = commentCount > 0 ? comments.Count(y => y.Rate == 3) * 100 / commentCount : 0,
+                    TwoPercent = commentCount > 0 ? comments.Count(y => y.Rate == 2) * 100 / commentCount : 0,
+                    OnePercent = commentCount > 0 ? comments.Count(y => y.Rate == 1) * 100 / commentCount : 0,
                     BusinessImages = NestedListToList(x.BusinessImages.Select(y => y.Image).ToList(), x.BusinessComments.Where(x => x.IsActive && !x.IsDeleted).Select(y => y.BusinessUserImages.Select(x => x.Image)).ToList()),
                     BusinessComments = x.BusinessComments.Where(x=> x.IsActive && !x.IsDeleted).Select(x=> new BusinessCommentDto {
                         Id = x.Id,
                         BusinessId = x.Id,
-                        UserId = _context.Users.Where(y=> y.Id == x.UserId.Value).FirstOrDefault().UserId,
+                        Name = x.User.Name,
+                        Surname = x.User.Surname,
+                        UserId = x.User.UserId,
+                        UserImage = x.User.UserPhoto,
+                        TotalComment = _context.BusinessComment.Count(y => y.UserId == x.UserId && y.IsActive && !y.IsDeleted),
                         Rate = x.Rate,
                         Comment = x.Comment,
+                        CommentType = x.CommentType,
                         Created = x.CreatedDate,
                         Images = x.BusinessUserImages.Select(y => y.Image).ToList(),
                         SubComments = x.BusinessSubComments.Where(y=> y.IsActive && !y.IsDeleted).Select(y=> new BusinessSubCommentDto
@@ -78,7 +155,7 @@ namespace NLayer.Repository.Repositories
                             Created = y.CreatedDate,
                         }).ToList()
                         
-                    }).ToList(),
+                    }).OrderByDescending(x=>x.Created).ToList(),
                     
                 }).AsNoTracking().FirstOrDefaultAsync();
         }
@@ -160,5 +237,6 @@ namespace NLayer.Repository.Repositories
             return newList;
         }
 
+        
     }
 }

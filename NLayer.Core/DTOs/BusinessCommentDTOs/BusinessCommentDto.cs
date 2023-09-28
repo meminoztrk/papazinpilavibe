@@ -11,9 +11,14 @@ namespace NLayer.Core.DTOs.BusinessCommentDTOs
     {
         public int Id { get; set; }
         public string UserId { get; set; }
+        public string Name { get; set; }
+        public string Surname { get; set; }
+        public string UserImage { get; set; }
+        public int TotalComment { get; set; }
         public int BusinessId { get; set; }
         public double Rate { get; set; }
         public string Comment { get; set; }
+        public string CommentType { get; set; }
         public DateTime Created { get; set; }
         public List<string> Images { get; set; }
         public List<BusinessSubCommentDto> SubComments { get; set; }

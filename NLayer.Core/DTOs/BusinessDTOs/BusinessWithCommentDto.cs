@@ -39,6 +39,13 @@ namespace NLayer.Core.DTOs.BusinessDTOs
         public string Fr { get; set; }
         public string Sa { get; set; }
         public string Su { get; set; }
+        public int CommentCount { get; set; }
+        public double FivePercent { get; set; }
+        public double FourPercent { get; set; }
+        public double ThreePercent { get; set; }
+        public double TwoPercent { get; set; }
+        public double OnePercent { get; set; }
+
         public double Rate { get; set; }
         public List<string> BusinessImages { get; set; }
         public List<BusinessCommentDto> BusinessComments { get; set; }

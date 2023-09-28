@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using NLayer.Core.DTOs;
+using NLayer.Core.DTOs.BusinessCommentDTOs;
 using NLayer.Core.DTOs.BusinessDTOs;
 using NLayer.Core.Models;
 using NLayer.Core.Services;
@@ -16,21 +17,34 @@ namespace NLayer.API.Controllers
     {
         private readonly IMapper _mapper;
         private readonly IBusinessService _businessService;
+        private readonly IBusinessCommentService _businessCommentService;
         private readonly CustomImageProcessing _image;
         private readonly IWebHostEnvironment _webHostEnvironment;
 
-        public BusinessController(IMapper mapper, IUserService userService, JwtService jwtService, CustomImageProcessing image, IBusinessService businessService, IWebHostEnvironment webHostEnvironment)
+        public BusinessController(IMapper mapper, IUserService userService, JwtService jwtService, CustomImageProcessing image, IBusinessService businessService, IWebHostEnvironment webHostEnvironment, IBusinessCommentService businessCommentService)
         {
             _mapper = mapper;
             _image = image;
             _businessService = businessService;
             _webHostEnvironment = webHostEnvironment;
+            _businessCommentService = businessCommentService;
         }
 
         [HttpPost]
         public async Task<IActionResult> AddBusiness([FromForm] BusinessAddDto business)
         {
             return CreateActionResult(await _businessService.AddBusiness(business));
+        }
+
+        [HttpPost("[action]")]
+        public async Task<IActionResult> AddComment([FromForm] BusinessCommentAddDto businessComment)
+        {
+            return CreateActionResult(await _businessCommentService.AddComment(businessComment));
+        }
+        [HttpGet("[action]")]
+        public async Task<IActionResult> GetCommentWithPagination(int id, int page, int take, bool isAsc, string commentType, int rate, string search)
+        {
+            return CreateActionResult(await _businessService.GetBusinessCommentsWithPaginationById(id,page,take,isAsc,commentType,rate,search));
         }
 
         [HttpPut]

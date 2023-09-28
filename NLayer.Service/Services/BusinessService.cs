@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using NLayer.Core.DTOs;
 using NLayer.Core.DTOs.About;
+using NLayer.Core.DTOs.BusinessCommentDTOs;
 using NLayer.Core.DTOs.BusinessDTOs;
 using NLayer.Core.DTOs.UserDTOs;
 using NLayer.Core.Models;
@@ -97,6 +98,12 @@ namespace NLayer.Service.Services
         {
             var businessWithCommentById = await _businessRepository.GetBusinessesWithCommentById(id);
             return CustomResponseDto<BusinessWithCommentDto>.Success(200, businessWithCommentById);
+        }
+
+        public async Task<CustomResponseDto<List<BusinessCommentDto>>> GetBusinessCommentsWithPaginationById(int id, int page, int take, bool isAsc, string commentType, int rate, string search)
+        {
+            var businessCommentsWithPagination = await _businessRepository.GetBusinessCommentsWithPaginationById(id,page,take, isAsc, commentType,rate, search);
+            return CustomResponseDto<List<BusinessCommentDto>>.Success(200, businessCommentsWithPagination);
         }
     }
 }
