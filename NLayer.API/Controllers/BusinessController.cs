@@ -42,7 +42,7 @@ namespace NLayer.API.Controllers
             return CreateActionResult(await _businessCommentService.AddComment(businessComment));
         }
         [HttpGet("[action]")]
-        public async Task<IActionResult> GetCommentWithPagination(int id, int page, int take, bool isAsc, string commentType, int rate, string search)
+        public async Task<IActionResult> GetCommentWithPagination(int id, bool isAsc, string commentType, int rate, string search, int page = 1, int take = 1)
         {
             return CreateActionResult(await _businessService.GetBusinessCommentsWithPaginationById(id,page,take,isAsc,commentType,rate,search));
         }

@@ -100,10 +100,10 @@ namespace NLayer.Service.Services
             return CustomResponseDto<BusinessWithCommentDto>.Success(200, businessWithCommentById);
         }
 
-        public async Task<CustomResponseDto<List<BusinessCommentDto>>> GetBusinessCommentsWithPaginationById(int id, int page, int take, bool isAsc, string commentType, int rate, string search)
+        public async Task<CustomResponseDto<BusinessCommentWithCountDto>> GetBusinessCommentsWithPaginationById(int id, int page, int take, bool isAsc, string commentType, int rate, string search)
         {
             var businessCommentsWithPagination = await _businessRepository.GetBusinessCommentsWithPaginationById(id,page,take, isAsc, commentType,rate, search);
-            return CustomResponseDto<List<BusinessCommentDto>>.Success(200, businessCommentsWithPagination);
+            return CustomResponseDto<BusinessCommentWithCountDto>.Success(200, businessCommentsWithPagination);
         }
     }
 }

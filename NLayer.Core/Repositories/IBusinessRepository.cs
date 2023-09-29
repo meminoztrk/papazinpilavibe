@@ -12,7 +12,7 @@ namespace NLayer.Core.Repositories
     public interface IBusinessRepository:IGenericRepository<Business>
     {
         Task<BusinessWithCommentDto> GetBusinessesWithCommentById(int id);
-        Task<List<BusinessCommentDto>> GetBusinessCommentsWithPaginationById(int id, int page, int take, bool isAsc, string commentType, int rate, string search);
+        Task<BusinessCommentWithCountDto> GetBusinessCommentsWithPaginationById(int id, int page, int take, bool isAsc, string commentType, int rate, string search);
         Task<List<BusinessByUserDto>> GetBusinessesWithIncludeByUserId(int id);
         Task<BusinessDto> GetBusinessWithIncludeById(int id);
     }
