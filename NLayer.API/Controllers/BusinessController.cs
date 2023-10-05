@@ -47,6 +47,12 @@ namespace NLayer.API.Controllers
             return CreateActionResult(await _businessService.GetBusinessCommentsWithPaginationById(id,page,take,isAsc,commentType,rate,search));
         }
 
+        [HttpGet("[action]")]
+        public async Task<IActionResult> GetBusinessWithCountBySearching(int provinceId, bool isMostReview, string search, int page = 1, int take = 1)
+        {
+            return CreateActionResult(await _businessService.GetBusinessWithCountBySearching(page, take, provinceId, isMostReview, search));
+        }
+
         [HttpPut]
         public async Task<IActionResult> UpdateBusiness(int id,[FromForm] BusinessUpdateDto business)
         {
@@ -63,6 +69,13 @@ namespace NLayer.API.Controllers
         public async Task<IActionResult> GetBusinessesWithCommentById(int id)
         {
             return CreateActionResult(await _businessService.GetBusinessesWithCommentById(id));
+        }
+
+        [HttpGet("[action]")]
+        public async Task<IActionResult> GetCommentsByUser(string userId, int page = 1)
+        {
+            return CreateActionResult(await _businessCommentService.GetUserComments(userId, page));
+
         }
 
         [HttpGet("[action]")]

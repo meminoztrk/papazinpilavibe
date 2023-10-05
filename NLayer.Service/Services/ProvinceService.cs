@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using NLayer.Core.DTOs;
 using NLayer.Core.DTOs.ProvinceDTOs;
 using NLayer.Core.Models;
@@ -30,47 +31,68 @@ namespace NLayer.Service.Services
         public async Task<CustomResponseDto<List<ProvinceWithStateDto>>> GetSearchingProvinces(string value)
         {
             List<ProvinceWithStateDto> dto = new List<ProvinceWithStateDto>();
+
             if (!string.IsNullOrWhiteSpace(value))
             {
-                var provinces = await _provinceRepository.GetAll().ToListAsync();       
+
+                var splitted = value.ToLower().Split();
+                var provinces = await _provinceRepository.GetAll().ToListAsync();
                 dto = provinces
-                    .Where(x => x.SehirIlceMahalleAdi.ToLower().StartsWith(value.ToLower()))
+                    .Where(x => splitted.All(y => x.MergedArea.ToLower().Contains(y)))
                     .Select(x => new ProvinceWithStateDto()
                     {
                         Id = x.Id,
-                        City = State(x,provinces),
+                        City = x.MergedArea,
                     }).Take(10).ToList();
             }
-    
-            
+
+
             return CustomResponseDto<List<ProvinceWithStateDto>>.Success(200, dto);
         }
 
-        private string State(Province prov,List<Province> provinces)
-        {
-            string result = String.IsNullOrEmpty(prov.MahalleID) && prov.Id > 81 ? fLetter(Regex.Replace(prov.SehirIlceMahalleAdi, @"\([^)]*\)", "").Trim()) + ", " : fLetter(prov.SehirIlceMahalleAdi);
-            int ustid = prov.UstID;
-            while (ustid != 0)
-            {
-                var item = provinces.Where(x => x.Id == ustid).SingleOrDefault();
-                result += (item.UstID == 0 ? " / " : "") + fLetter(item.SehirIlceMahalleAdi);
-                ustid = item.UstID;
-            }
-            return result;
-        }
+        //private string State(Province prov,List<Province> provinces)
+        //{
+        //    string result = String.IsNullOrEmpty(prov.MahalleID) && prov.Id > 81 ? fLetter(prov.SehirIlceMahalleAdi) + ", " : fLetter(prov.SehirIlceMahalleAdi);
+        //    int ustid = prov.UstID;
+        //    while (ustid != 0)
+        //    {
+        //        var item = provinces.Where(x => x.Id == ustid).SingleOrDefault();
+        //        result += (item.UstID == 0 ? " / " : "") + fLetter(item.SehirIlceMahalleAdi);
+        //        ustid = item.UstID;
+        //    }
+        //    return result;
+        //}
 
-        private string fLetter(string input)
-        {
-            if (string.IsNullOrEmpty(input))
-            {
-                return input;
-            }
+        //private string fLetter(string sentence)
+        //{
+        //    sentence = sentence.Replace("(MERKEZ)","").Trim();
+        //    string[] words = sentence.Trim().Split();
+        //    StringBuilder result = new StringBuilder();
 
-            string firstLetter = input.Substring(0, 1).ToUpper();
-            string restOfText = input.Substring(1).ToLower();
+        //    foreach (string word in words)
+        //    {
+        //        if (word == "") { continue; }
+        //        if (word.StartsWith("("))
+        //        {
+        //            // Kelime parantez içindeyse, içeriğini koruyarak baş harfi büyük geri kalan küçük yap.
+        //            result.Append("(");
+        //            result.Append(char.ToUpper(word[1]));
+        //            result.Append(word.Substring(2).ToLower());
+        //        }
+        //        else
+        //        {
+        //            // Diğer kelimelerin baş harfini büyük geri kalanını küçük yap.
+        //            result.Append(char.ToUpper(word[0]));
+        //            result.Append(word.Substring(1).ToLower());
+        //        }
 
-            return firstLetter + restOfText;
-        }
+        //        result.Append(" ");
+        //    }
+
+        //    return result.ToString().Trim();
+        //}
+
+
 
     }
 }

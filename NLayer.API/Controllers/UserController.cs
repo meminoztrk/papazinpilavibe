@@ -25,6 +25,12 @@ namespace NLayer.API.Controllers
             _image = image;
         }
 
+        [HttpGet("[action]")]
+        public async Task<IActionResult> UserProfile(string userid)
+        {
+            return CreateActionResult(await _userService.GetUserProfileByUserId(userid));
+        }
+
         [HttpPut]
         public async Task<IActionResult> UpdateUser(string id, [FromForm] UserUpdateDto userUpdateDto, List<IFormFile> uploadImage)
         {      

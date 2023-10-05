@@ -4,6 +4,7 @@ using NLayer.Core.DTOs.BusinessDTOs;
 using NLayer.Core.DTOs.BusinessSubCommentDTOs;
 using NLayer.Core.Models;
 using NLayer.Core.Repositories;
+using NLayer.Core.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,6 +13,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Xml.Linq;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace NLayer.Repository.Repositories
 {
@@ -19,6 +21,48 @@ namespace NLayer.Repository.Repositories
     {
         public BusinessRepository(AppDbContext context) : base(context)
         {
+        }
+
+        public async Task<BusinessWithCountBySearching> GetBusinessWithCountBySearching(int page, int take,int provinceId, bool isMostReview, string search)
+        {
+            BusinessWithCountBySearching businessSearching = new BusinessWithCountBySearching();
+            bool test = string.IsNullOrEmpty(search);
+            string trimLower = !string.IsNullOrEmpty(search) ? search.Trim().ToLower() : string.Empty;
+            var Searching = await _context.Business
+                .Include(x=>x.BusinessComments.Where(x=>x.IsActive && !x.IsDeleted))
+                .Include(x=>x.BusinessImages)
+                .Include(x=>x.Province)
+                .Where(x => x.IsActive
+                && !x.IsDeleted
+                && (x.Province.Id == provinceId || x.Province.UstID == provinceId || x.Province.CityId == provinceId)
+                && (string.IsNullOrEmpty(search) 
+                    || x.BusinessName.ToLower().Contains(trimLower)
+                    || x.FoodTypes.ToLower().Contains(trimLower)
+                    || x.BusinessProps.ToLower().Contains(trimLower)
+                    || x.BusinessServices.ToLower().Contains(trimLower)
+                    || x.BusinessComments.Any(y=> y.Comment.ToLower().Contains(trimLower))
+                    )
+                ).ToListAsync();
+
+            businessSearching.BusinessCount = Searching.Count();
+            businessSearching.ProvinceId = provinceId;
+            businessSearching.ProvinceName = _context.Provinces.Where(x=>x.Id == provinceId).FirstOrDefault().MergedArea;
+            businessSearching.BusinessesBySearching = Searching.Select(x => new BusinessBySearching {
+                Id = x.Id,
+                BusinessImage = x.BusinessImages.FirstOrDefault().Image,
+                BusinessType = x.BusinessType,
+                BusinessName = x.BusinessName,
+                TotalComment = x.BusinessComments.Count(),
+                SearchCommentCount = x.BusinessComments.Where(x=>x.Comment.ToLower().Contains(trimLower)).Count(),
+                SearchComment = CheckParagraph(search, x.BusinessComments.Where(x => x.Comment.ToLower().Contains(trimLower)).FirstOrDefault() == null ? "" : x.BusinessComments.Where(x => x.Comment.ToLower().Contains(trimLower)).FirstOrDefault().Comment),
+                Rate = x.BusinessComments.Where(x => x.IsActive && !x.IsDeleted).Select(x => x.Rate).DefaultIfEmpty().Average(),
+                Location = _context.Provinces.Where(y => y.Id == x.ProvinceId).FirstOrDefault().MergedArea,
+                FoodTypes = x.FoodTypes,
+                BusinessProps = x.BusinessProps,
+                BusinessServices = x.BusinessServices,
+            }).OrderByDescending(x=> isMostReview ? x.TotalComment : x.Rate).Skip((page - 1) * take).Take(take).ToList();
+
+            return businessSearching;
         }
 
         public async Task<BusinessCommentWithCountDto> GetBusinessCommentsWithPaginationById(int id, int page, int take, bool isAsc, string commentType, int rate, string search)
@@ -247,6 +291,20 @@ namespace NLayer.Repository.Repositories
             return newList;
         }
 
-        
+        private static string CheckParagraph(string search, string paragraph)
+        {
+            string result = "";
+            var splitString = paragraph.ToLower().Split(' ').Where(x => !string.IsNullOrEmpty(x)).ToArray(); 
+            if (splitString.Any(x=>x.Contains(search)))
+            {
+                int wordIndex = Array.FindIndex(splitString, s => s.Contains(search));
+
+                result = "..." + String.Join(" ", splitString.Where((k, index) => index <= wordIndex + 5).Select(k => k).Skip(wordIndex - 5)) + "...";
+            }
+            return result;
+        }
+
+
+
     }
 }

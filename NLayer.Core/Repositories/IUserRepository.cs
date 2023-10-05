@@ -1,4 +1,6 @@
 ﻿using NLayer.Core.DTOs;
+using NLayer.Core.DTOs.BusinessDTOs;
+using NLayer.Core.DTOs.UserDTOs;
 using NLayer.Core.Models;
 using System;
 using System.Collections.Generic;
@@ -12,5 +14,6 @@ namespace NLayer.Core.Repositories
     {
         bool UniqueUsername(string text);
         User GetByUsername(string username);
+        Task<UserProfileDto> GetUserProfileByUserId(string userid);
     }
 }

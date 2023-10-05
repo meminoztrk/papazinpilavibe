@@ -13,6 +13,7 @@ namespace NLayer.Core.Repositories
     {
         Task<BusinessWithCommentDto> GetBusinessesWithCommentById(int id);
         Task<BusinessCommentWithCountDto> GetBusinessCommentsWithPaginationById(int id, int page, int take, bool isAsc, string commentType, int rate, string search);
+        Task<BusinessWithCountBySearching> GetBusinessWithCountBySearching(int page, int take,int provinceId, bool isMostReview, string search);
         Task<List<BusinessByUserDto>> GetBusinessesWithIncludeByUserId(int id);
         Task<BusinessDto> GetBusinessWithIncludeById(int id);
     }

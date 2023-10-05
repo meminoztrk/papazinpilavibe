@@ -1,4 +1,7 @@
-﻿using NLayer.Core.Models;
+﻿using NLayer.Core.DTOs.BusinessDTOs;
+using NLayer.Core.DTOs;
+using NLayer.Core.DTOs.UserDTOs;
+using NLayer.Core.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,5 +15,6 @@ namespace NLayer.Core.Services
         bool UniqueEmail(string text);
         bool UniqueUsername(string text);
         User GetByUsername(string username);
+        Task<CustomResponseDto<UserProfileDto>> GetUserProfileByUserId(string userid);
     }
 }

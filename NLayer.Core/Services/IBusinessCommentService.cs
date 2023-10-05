@@ -13,5 +13,6 @@ namespace NLayer.Core.Services
     public interface IBusinessCommentService:IService<BusinessComment>
     {
         Task<CustomResponseDto<NoContentDto>> AddComment(BusinessCommentAddDto businessComment);
+        Task<CustomResponseDto<List<BusinessCommentByUserDto>>> GetUserComments(string userid, int page);
     }
 }

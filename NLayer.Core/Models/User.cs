@@ -26,5 +26,7 @@ namespace NLayer.Core.Models
         public string UserId { get; set; } = Guid.NewGuid().ToString("N");
         [JsonIgnore] public string Password { get; set; }
         public ICollection<Business> Businesses { get; set; }
+        public ICollection<BusinessUserImage> BusinessUserImages { get; set; }
+        public ICollection<BusinessComment> BusinessComments { get; set; }
     }
 }

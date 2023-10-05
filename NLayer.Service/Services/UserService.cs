@@ -1,5 +1,7 @@
 ﻿using AutoMapper;
 using NLayer.Core.DTOs;
+using NLayer.Core.DTOs.BusinessDTOs;
+using NLayer.Core.DTOs.UserDTOs;
 using NLayer.Core.Models;
 using NLayer.Core.Repositories;
 using NLayer.Core.Services;
@@ -25,6 +27,12 @@ namespace NLayer.Service.Services
         public User GetByUsername(string username)
         {
             return _userRepository.GetByUsername(username);
+        }
+
+        public async Task<CustomResponseDto<UserProfileDto>> GetUserProfileByUserId(string userid)
+        {
+            var user = await _userRepository.GetUserProfileByUserId(userid);
+            return CustomResponseDto<UserProfileDto>.Success(200, user);
         }
 
         public bool UniqueEmail(string text)

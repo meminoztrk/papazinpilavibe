@@ -16,6 +16,8 @@ namespace NLayer.Core.Models
         public string maxlongitude { get; set; }
         public string maxlatitude { get; set; }
         public string MahalleID { get; set; }
+        public string MergedArea { get; set; }
+        public int CityId { get; set; }
         public ICollection<User> Users { get; set; }
     }
 }

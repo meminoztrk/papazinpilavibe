@@ -17,6 +17,7 @@ namespace NLayer.Core.Services
         Task<CustomResponseDto<List<BusinessByUserDto>>> GetBusinessesByUserId(string userId);
         Task<CustomResponseDto<BusinessWithCommentDto>> GetBusinessesWithCommentById(int id);
         Task<CustomResponseDto<BusinessCommentWithCountDto>> GetBusinessCommentsWithPaginationById(int id,int page,int take, bool isAsc, string commentType, int rate, string search);
+        Task<CustomResponseDto<BusinessWithCountBySearching>> GetBusinessWithCountBySearching(int page, int take, int provinceId, bool isMostReview, string search);
         Task<CustomResponseDto<BusinessDto>> GetBusinessById(int id);
     }
 }

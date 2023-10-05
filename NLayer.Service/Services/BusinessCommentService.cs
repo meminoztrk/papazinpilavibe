@@ -17,16 +17,18 @@ namespace NLayer.Service.Services
     public class BusinessCommentService : Service<BusinessComment>, IBusinessCommentService
     {
         private readonly IUserRepository _userRepository;
+        private readonly IBusinessCommentRepository _businessCommentRepository;
         private readonly IBusinessUserImageService _businessUserImageService;
         private readonly IMapper _mapper;
         private readonly CustomImageProcessing _customImageProcessing;
 
-        public BusinessCommentService(IGenericRepository<BusinessComment> repository, IUnitOfWork unitOfWork, IUserRepository userRepository, IBusinessUserImageService businessUserImageService, IMapper mapper, CustomImageProcessing customImageProcessing) : base(repository, unitOfWork)
+        public BusinessCommentService(IGenericRepository<BusinessComment> repository, IUnitOfWork unitOfWork, IUserRepository userRepository, IBusinessUserImageService businessUserImageService, IMapper mapper, CustomImageProcessing customImageProcessing, IBusinessCommentRepository businessCommentRepository) : base(repository, unitOfWork)
         {
             _userRepository = userRepository;
             _mapper = mapper;
             _customImageProcessing = customImageProcessing;
             _businessUserImageService = businessUserImageService;
+            _businessCommentRepository = businessCommentRepository;
         }
 
         public async Task<CustomResponseDto<NoContentDto>> AddComment(BusinessCommentAddDto businessComment)
@@ -45,6 +47,12 @@ namespace NLayer.Service.Services
             }
 
             return CustomResponseDto<NoContentDto>.Success(200);
+        }
+
+        public async Task<CustomResponseDto<List<BusinessCommentByUserDto>>> GetUserComments(string userid, int page)
+        {
+            var userComment = await _businessCommentRepository.GetUserComments(userid, page);
+            return CustomResponseDto<List<BusinessCommentByUserDto>>.Success(200, userComment);
         }
     }
 }

@@ -105,5 +105,11 @@ namespace NLayer.Service.Services
             var businessCommentsWithPagination = await _businessRepository.GetBusinessCommentsWithPaginationById(id,page,take, isAsc, commentType,rate, search);
             return CustomResponseDto<BusinessCommentWithCountDto>.Success(200, businessCommentsWithPagination);
         }
+
+        public async Task<CustomResponseDto<BusinessWithCountBySearching>> GetBusinessWithCountBySearching(int page, int take, int provinceId, bool isMostReview, string search)
+        {
+            var businessWithCountBySearching = await _businessRepository.GetBusinessWithCountBySearching(page, take, provinceId, isMostReview, search);
+            return CustomResponseDto<BusinessWithCountBySearching>.Success(200, businessWithCountBySearching);
+        }
     }
 }
