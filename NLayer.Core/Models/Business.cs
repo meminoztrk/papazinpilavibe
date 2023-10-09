@@ -41,5 +41,6 @@ namespace NLayer.Core.Models
         public int Views { get; set; } = 0;
         public ICollection<BusinessImage> BusinessImages { get; set; }
         public ICollection<BusinessComment> BusinessComments { get; set; }
+        public ICollection<FavoriteBusiness> FavoriteBusinesses { get; set; }
     }
 }

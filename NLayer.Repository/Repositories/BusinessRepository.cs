@@ -67,28 +67,33 @@ namespace NLayer.Repository.Repositories
 
         public async Task<BusinessCommentWithCountDto> GetBusinessCommentsWithPaginationById(int id, int page, int take, bool isAsc, string commentType, int rate, string search)
         {
-            var listed = _context.BusinessComment.Where(x => x.IsActive && !x.IsDeleted && x.BusinessId == id && (string.IsNullOrEmpty(search) || x.Comment.ToLower().Contains(search.Trim().ToLower()))).Select(x => new BusinessCommentDto
-            {
-                Id = x.Id,
-                BusinessId = x.Id,
-                Name = x.User.Name,
-                Surname = x.User.Surname,
-                UserId = x.User.UserId,
-                UserImage = x.User.UserPhoto,
-                TotalComment = _context.BusinessComment.Count(y => y.UserId == x.UserId && y.IsActive && !y.IsDeleted),
-                Rate = x.Rate,
-                Comment = x.Comment,
-                CommentType = x.CommentType,
-                Created = x.CreatedDate,
-                Images = x.BusinessUserImages.Select(y => y.Image).ToList(),
-                SubComments = x.BusinessSubComments.Where(y => y.IsActive && !y.IsDeleted).Select(y => new BusinessSubCommentDto
+            var listed = _context.BusinessComment
+                .Include(x=>x.FavoriteComments)
+                .Include(x => x.BusinessSubComments)
+                .Where(x => x.IsActive && !x.IsDeleted && x.BusinessId == id && (string.IsNullOrEmpty(search) || x.Comment.ToLower().Contains(search.Trim().ToLower())))
+                .Select(x => new BusinessCommentDto
                 {
-                    Id = y.Id,
-                    UserId = _context.Users.Where(y => y.Id == x.UserId.Value).FirstOrDefault().UserId,
-                    Comment = y.Comment,
-                    Created = y.CreatedDate,
-                }).ToList()
-            }).AsNoTracking();
+                    Id = x.Id,
+                    BusinessId = x.Id,
+                    Name = x.User.Name,
+                    Surname = x.User.Surname,
+                    UserId = x.User.UserId,
+                    UserImage = x.User.UserPhoto,
+                    TotalComment = _context.BusinessComment.Count(y => y.UserId == x.UserId && y.IsActive && !y.IsDeleted),
+                    Rate = x.Rate,
+                    Comment = x.Comment,
+                    CommentType = x.CommentType,
+                    Created = x.CreatedDate,
+                    Images = x.BusinessUserImages.Select(y => y.Image).ToList(),
+                    LikedUsers = x.FavoriteComments.Select(x => x.UserId).ToList(),
+                    SubComments = x.BusinessSubComments.Where(y => y.IsActive && !y.IsDeleted).Select(y => new BusinessSubCommentDto
+                    {
+                        Id = y.Id,
+                        UserId = _context.Users.Where(y => y.Id == x.UserId.Value).FirstOrDefault().UserId,
+                        Comment = y.Comment,
+                        Created = y.CreatedDate,
+                    }).ToList()
+                }).AsNoTracking();
 
             BusinessCommentWithCountDto comments = new BusinessCommentWithCountDto();
 
@@ -144,6 +149,7 @@ namespace NLayer.Repository.Repositories
                 .Include(x => x.User)
                 .Include(x => x.Province)
                 .Include(x => x.BusinessImages)
+                .Include(x => x.FavoriteBusinesses)
                 .Include(x => x.BusinessComments.Where(x => x.IsActive && !x.IsDeleted)).ThenInclude(x => x.BusinessUserImages)
                 .Include(x => x.BusinessComments.Where(x => x.IsActive && !x.IsDeleted)).ThenInclude(x => x.User)
                 .Include(x => x.BusinessComments.Where(x => x.IsActive && !x.IsDeleted)).ThenInclude(x => x.BusinessSubComments)
@@ -181,6 +187,7 @@ namespace NLayer.Repository.Repositories
                     Fr = x.Fr,
                     Sa = x.Sa,
                     Su = x.Su,
+                    LikedUsers = x.FavoriteBusinesses.Select(x=>x.UserId).ToList(),
                     CommentCount = commentCount,
                     FivePercent = commentCount > 0 ? comments.Count(y => y.Rate == 5) * 100 / commentCount : 0,
                     FourPercent = commentCount > 0 ? comments.Count(y => y.Rate == 4) * 100 / commentCount : 0,

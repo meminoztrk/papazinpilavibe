@@ -17,5 +17,6 @@ namespace NLayer.Core.Models
         public string CommentType { get; set; }
         public ICollection<BusinessUserImage> BusinessUserImages { get; set; }
         public ICollection<BusinessSubComment> BusinessSubComments { get; set; }
+        public ICollection<FavoriteComment> FavoriteComments { get; set; }
     }
 }

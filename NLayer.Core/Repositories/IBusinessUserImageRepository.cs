@@ -1,4 +1,5 @@
-﻿using NLayer.Core.Models;
+﻿using NLayer.Core.DTOs.BusinessDTOs;
+using NLayer.Core.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,5 +10,6 @@ namespace NLayer.Core.Repositories
 {
     public interface  IBusinessUserImageRepository:IGenericRepository<BusinessUserImage>
     {
+        Task<List<string>> GetPreviewImagesByUserId(string userid);
     }
 }

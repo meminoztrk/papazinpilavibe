@@ -21,6 +21,7 @@ namespace NLayer.Core.DTOs.BusinessCommentDTOs
         public string CommentType { get; set; }
         public DateTime Created { get; set; }
         public List<string> Images { get; set; }
+        public List<int> LikedUsers { get; set; }
         public List<BusinessSubCommentDto> SubComments { get; set; }
 
     }

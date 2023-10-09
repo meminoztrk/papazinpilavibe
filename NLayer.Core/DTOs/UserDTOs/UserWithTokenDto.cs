@@ -11,6 +11,7 @@ namespace NLayer.Core.DTOs.UserDTOs
     public class UserWithTokenDto
     {
         public string UserId { get; set; }
+        public string Id { get; set; }
         public string Name { get; set; }
         public string Surname { get; set; }
         public string Email { get; set; }

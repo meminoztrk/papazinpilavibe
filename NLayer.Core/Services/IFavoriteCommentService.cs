@@ -6,11 +6,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using NLayer.Core.DTOs.BusinessCommentDTOs;
 
 namespace NLayer.Core.Services
 {
-    public interface IBusinessUserImageService:IService<BusinessUserImage>
+    public interface IFavoriteCommentService:IService<FavoriteComment>
     {
-        Task<CustomResponseDto<List<string>>> GetPreviewImagesByUserId(string userid);
+        Task<CustomResponseDto<List<BusinessCommentByUserDto>>> GetFavoriteComments(string userid, int page);
     }
 }

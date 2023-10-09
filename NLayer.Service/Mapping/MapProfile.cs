@@ -4,6 +4,10 @@ using NLayer.Core.DTOs;
 using NLayer.Core.DTOs.About;
 using NLayer.Core.DTOs.BusinessCommentDTOs;
 using NLayer.Core.DTOs.BusinessDTOs;
+using NLayer.Core.DTOs.FavoriteBusinessDTOs;
+using NLayer.Core.DTOs.FavoriteCommentDTOs;
+using NLayer.Core.DTOs.OwnerRequestDTOs;
+using NLayer.Core.DTOs.ReportDTOs;
 using NLayer.Core.DTOs.UserDTOs;
 using NLayer.Core.Models;
 using System;
@@ -31,6 +35,14 @@ namespace NLayer.Service.Mapping
             CreateMap<Business, BusinessUpdateDto>().ReverseMap();
 
             CreateMap<BusinessComment, BusinessCommentAddDto>().ReverseMap();
+
+            CreateMap<FavoriteComment, FavoriteCommentAddDto>().ReverseMap();
+
+            CreateMap<FavoriteBusiness, FavoriteBusinessAddDto>().ReverseMap();
+
+            CreateMap<Report, ReportAddDto>().ReverseMap();
+
+            CreateMap<OwnerRequest, OwnerRequestAddDto>().ReverseMap();
 
             CreateMap<About, AboutDto>();
         }

@@ -18,16 +18,18 @@ namespace NLayer.API.Controllers
         private readonly IMapper _mapper;
         private readonly IBusinessService _businessService;
         private readonly IBusinessCommentService _businessCommentService;
+        private readonly IBusinessUserImageService _businessUserImageService;
         private readonly CustomImageProcessing _image;
         private readonly IWebHostEnvironment _webHostEnvironment;
 
-        public BusinessController(IMapper mapper, IUserService userService, JwtService jwtService, CustomImageProcessing image, IBusinessService businessService, IWebHostEnvironment webHostEnvironment, IBusinessCommentService businessCommentService)
+        public BusinessController(IMapper mapper, IUserService userService, JwtService jwtService, CustomImageProcessing image, IBusinessService businessService, IWebHostEnvironment webHostEnvironment, IBusinessCommentService businessCommentService, IBusinessUserImageService businessUserImageService)
         {
             _mapper = mapper;
             _image = image;
             _businessService = businessService;
             _webHostEnvironment = webHostEnvironment;
             _businessCommentService = businessCommentService;
+            _businessUserImageService = businessUserImageService;
         }
 
         [HttpPost]
@@ -77,6 +79,13 @@ namespace NLayer.API.Controllers
             return CreateActionResult(await _businessCommentService.GetUserComments(userId, page));
 
         }
+
+        [HttpGet("[action]")]
+        public async Task<IActionResult> GetPreviewImagesByUserId(string userId)
+        {
+            return CreateActionResult(await _businessUserImageService.GetPreviewImagesByUserId(userId));
+        }
+
 
         [HttpGet("[action]")]
         public async Task<IActionResult> GetBusinessById(int id)

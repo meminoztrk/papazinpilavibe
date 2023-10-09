@@ -28,6 +28,10 @@ namespace NLayer.Repository
         public DbSet<BusinessComment> BusinessComment { get; set; }
         public DbSet<BusinessSubComment> BusinessSubComment { get; set; }
         public DbSet<BusinessUserImage> BusinessUserImage { get; set; }
+        public DbSet<FavoriteBusiness> FavoriteBusiness { get; set; }
+        public DbSet<FavoriteComment> FavoriteComment { get; set; }
+        public DbSet<Report> Report { get; set; }
+        public DbSet<OwnerRequest> OwnerRequest { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly()); // Bütün Assembly Dosyalarını Çek

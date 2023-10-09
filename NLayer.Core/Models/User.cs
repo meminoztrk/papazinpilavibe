@@ -14,6 +14,7 @@ namespace NLayer.Core.Models
         public string Surname { get; set; }
         public string Email { get; set; }
         public string Phone { get; set; }
+        public string About { get; set; }
         public string UserPhoto { get; set; } = "defaultuser.png";
         public int? ProvinceId { get; set; }
         public virtual Province Province { get; set; }

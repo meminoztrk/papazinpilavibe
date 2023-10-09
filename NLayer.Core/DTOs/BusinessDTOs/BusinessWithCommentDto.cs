@@ -45,8 +45,8 @@ namespace NLayer.Core.DTOs.BusinessDTOs
         public double ThreePercent { get; set; }
         public double TwoPercent { get; set; }
         public double OnePercent { get; set; }
-
         public double Rate { get; set; }
+        public List<int> LikedUsers { get; set; }
         public List<string> BusinessImages { get; set; }
         public List<BusinessCommentDto> BusinessComments { get; set; }
 

@@ -1,4 +1,5 @@
-﻿using NLayer.Core.Models;
+﻿using Microsoft.EntityFrameworkCore;
+using NLayer.Core.Models;
 using NLayer.Core.Repositories;
 using System;
 using System.Collections.Generic;
@@ -12,6 +13,14 @@ namespace NLayer.Repository.Repositories
     {
         public BusinessUserImageRepository(AppDbContext context) : base(context)
         {
+        }
+
+        public async Task<List<string>> GetPreviewImagesByUserId(string userid)
+        {
+            return await _context.BusinessUserImage
+                .Where(x => !x.IsDeleted && x.IsActive && x.UserId == _context.Users.Where(x => x.UserId == userid).FirstOrDefault().Id)
+                .Select(x => x.Image)
+                .ToListAsync();
         }
     }
 }
