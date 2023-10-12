@@ -25,6 +25,10 @@ namespace NLayer.Core.Models
         public bool IsGoogle { get; set; }
         public string GoogleCredential { get; set; }
         public string UserId { get; set; } = Guid.NewGuid().ToString("N");
+        public string? VerificationToken { get; set; }
+        public DateTime? VerifiedAt { get; set; }
+        public string? PasswordResetToken { get; set; }
+        public DateTime? ResetTokenExpires { get; set; }
         [JsonIgnore] public string Password { get; set; }
         public ICollection<Business> Businesses { get; set; }
         public ICollection<BusinessUserImage> BusinessUserImages { get; set; }

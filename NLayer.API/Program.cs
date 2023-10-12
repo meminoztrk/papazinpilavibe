@@ -19,6 +19,7 @@ using NLayer.API.Modules;
 using Microsoft.AspNetCore.Authentication.Certificate;
 using Newtonsoft.Json;
 using NLayer.Service.Helper;
+using Microsoft.AspNetCore.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
 

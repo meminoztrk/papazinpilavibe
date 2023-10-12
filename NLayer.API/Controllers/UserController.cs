@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using NLayer.Core.DTOs;
 using NLayer.Core.DTOs.UserDTOs;
 using NLayer.Core.Models;
@@ -106,6 +107,40 @@ namespace NLayer.API.Controllers
             userWithTokenLogin.Token = _jwtService.Generate(user.Id);
 
             return CreateActionResult(CustomResponseDto<UserWithTokenDto>.Success(201, userWithTokenLogin));
+        }
+
+        [HttpPost("forgot-password")]
+        public async Task<IActionResult> ForgotPassword(string email)
+        {
+            var user = _userService.GetByUsername(email);
+            if (user == null)
+            {
+                return BadRequest("User not found.");
+            }
+
+            user.PasswordResetToken = Guid.NewGuid().ToString();
+            user.ResetTokenExpires = DateTime.Now.AddMinutes(30);
+            await _userService.UpdateAsync(user);
+
+            return Ok("You may now reset your password.");
+        }
+
+        [HttpPost("reset-password")]
+        public async Task<IActionResult> ResetPassword(UserResetPasswordDto request)
+        {
+            var user = await _userService.Where(u => u.UserId == request.UserId && u.PasswordResetToken == request.Token).FirstOrDefaultAsync();
+            if (user == null || user.ResetTokenExpires < DateTime.Now)
+            {
+                return BadRequest("Invalid Token.");
+            }
+
+            user.Password = BCrypt.Net.BCrypt.HashPassword(request.Password);
+            user.PasswordResetToken = null;
+            user.ResetTokenExpires = null;
+
+            await _userService.UpdateAsync(user);
+
+            return Ok("Password successfully reset.");
         }
 
         [HttpGet("user")]

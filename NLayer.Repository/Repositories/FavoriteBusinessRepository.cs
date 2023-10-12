@@ -37,6 +37,7 @@ namespace NLayer.Repository.Repositories
                     FoodTypes = x.FoodTypes,
                     BusinessProps = x.BusinessProps,
                     BusinessServices = x.BusinessServices,
+                    LikedUsers = x.FavoriteBusinesses.Select(x => x.UserId).ToList(),
                     Created = x.FavoriteBusinesses.FirstOrDefault().CreatedDate,
                 })
                 .OrderByDescending(x => x.Created)
