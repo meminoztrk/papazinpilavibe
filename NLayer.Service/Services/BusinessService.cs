@@ -2,8 +2,10 @@
 using Microsoft.EntityFrameworkCore;
 using NLayer.Core.DTOs;
 using NLayer.Core.DTOs.About;
+using NLayer.Core.DTOs.AdminDTOs;
 using NLayer.Core.DTOs.BusinessCommentDTOs;
 using NLayer.Core.DTOs.BusinessDTOs;
+using NLayer.Core.DTOs.FilterPaginationDTOs;
 using NLayer.Core.DTOs.UserDTOs;
 using NLayer.Core.Models;
 using NLayer.Core.Repositories;
@@ -110,6 +112,11 @@ namespace NLayer.Service.Services
         {
             var businessWithCountBySearching = await _businessRepository.GetBusinessWithCountBySearching(page, take, provinceId, isMostReview, search);
             return CustomResponseDto<BusinessWithCountBySearching>.Success(200, businessWithCountBySearching);
+        }
+
+        public async Task<CustomResponseDto<AdminBusinessWithCountDto>> GetBusinessesWithUser(FilterPaginationDto paginationFilter)
+        {
+            return CustomResponseDto<AdminBusinessWithCountDto>.Success(200, await _businessRepository.GetBusinessesWithUser(paginationFilter));
         }
     }
 }

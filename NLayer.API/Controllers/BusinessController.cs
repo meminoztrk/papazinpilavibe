@@ -78,7 +78,7 @@ namespace NLayer.API.Controllers
         {
             return CreateActionResult(await _businessCommentService.GetUserComments(userId, page));
 
-        }
+        }    
 
         [HttpGet("[action]")]
         public async Task<IActionResult> GetPreviewImagesByUserId(string userId)

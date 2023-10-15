@@ -1,18 +1,22 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using NLayer.Core.DTOs.AdminDTOs;
 using NLayer.Core.DTOs.BusinessCommentDTOs;
 using NLayer.Core.DTOs.BusinessDTOs;
 using NLayer.Core.DTOs.BusinessSubCommentDTOs;
+using NLayer.Core.DTOs.FilterPaginationDTOs;
 using NLayer.Core.Models;
 using NLayer.Core.Repositories;
 using NLayer.Core.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Dynamic.Core;
 using System.Linq.Expressions;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Xml.Linq;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 using static System.Net.Mime.MediaTypeNames;
 
 namespace NLayer.Repository.Repositories
@@ -21,6 +25,61 @@ namespace NLayer.Repository.Repositories
     {
         public BusinessRepository(AppDbContext context) : base(context)
         {
+        }
+
+        public async Task<AdminBusinessWithCountDto> GetBusinessesWithUser(FilterPaginationDto filterPagination)
+        {
+            AdminBusinessWithCountDto adminBusinessWithCountDto = new AdminBusinessWithCountDto();
+            IQueryable<AdminBusinessDto> businessQuery = _context.Business.AsNoTracking().Include(x => x.User).Include(x => x.Province).Where(x => !x.IsDeleted).Select(x => new AdminBusinessDto
+            {
+                Id = x.Id,
+                BusinessName = x.BusinessName,
+                BusinessType = x.BusinessType,
+                Phone = x.Phone,
+                Location = x.Province.MergedArea,
+                Process = x.Process,
+                Email = x.User.Email,
+                Created = x.CreatedDate,
+                IsActive = x.IsActive
+            });
+            
+            var filterSearch = filterPagination.Filters.Where(y => y.ColumnValue != null);
+            
+
+            if (filterSearch.Count() > 0)
+            {
+                string query = string.Empty;
+                foreach (var item in filterSearch)
+                {       
+                    query += $"{item.ColumnName}.ToLower().Contains(\"{item.ColumnValue.ToLower()}\")";
+                    query += item == filterSearch.Last() ? "" : " AND ";
+                }
+                businessQuery = businessQuery.Where(query);
+            }
+
+            Expression<Func<AdminBusinessDto, object>> keySelector = filterPagination.Sorter.Field switch
+            {
+                "businessName" => business => business.BusinessName,
+                "businessType" => business => business.BusinessType,
+                "location" => business => business.Location,
+                "process" => business => business.Process,
+                "email" => business => business.Email,
+                "phone" => business => business.Phone,
+                "created" => business => business.Created,
+                _ => business => business.Id
+            };
+
+            if (filterPagination.Sorter.Order == "descend")
+            {
+                businessQuery = businessQuery.OrderByDescending(keySelector);
+            }
+            else
+            {
+                businessQuery = businessQuery.OrderBy(keySelector);
+            }
+            adminBusinessWithCountDto.BusinessCount = businessQuery.Count();
+            adminBusinessWithCountDto.AdminBusiness = await businessQuery.Skip((filterPagination.Pagination.Current - 1) * filterPagination.Pagination.PageSize).Take(filterPagination.Pagination.PageSize).ToListAsync();
+            return adminBusinessWithCountDto;
         }
 
         public async Task<BusinessWithCountBySearching> GetBusinessWithCountBySearching(int page, int take,int provinceId, bool isMostReview, string search)
@@ -311,7 +370,15 @@ namespace NLayer.Repository.Repositories
             return result;
         }
 
+        private static bool ContainsAny(string text, string[] needles)
+        {
+            foreach (string needle in needles)
+            {
+                if (text.Contains(needle))
+                    return true;
+            }
 
-
+            return false;
+        }
     }
 }

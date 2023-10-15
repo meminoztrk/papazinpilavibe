@@ -1,6 +1,8 @@
 ﻿using NLayer.Core.DTOs;
+using NLayer.Core.DTOs.AdminDTOs;
 using NLayer.Core.DTOs.BusinessCommentDTOs;
 using NLayer.Core.DTOs.BusinessDTOs;
+using NLayer.Core.DTOs.FilterPaginationDTOs;
 using NLayer.Core.Models;
 using System;
 using System.Collections.Generic;
@@ -19,5 +21,7 @@ namespace NLayer.Core.Services
         Task<CustomResponseDto<BusinessCommentWithCountDto>> GetBusinessCommentsWithPaginationById(int id,int page,int take, bool isAsc, string commentType, int rate, string search);
         Task<CustomResponseDto<BusinessWithCountBySearching>> GetBusinessWithCountBySearching(int page, int take, int provinceId, bool isMostReview, string search);
         Task<CustomResponseDto<BusinessDto>> GetBusinessById(int id);
+        Task<CustomResponseDto<AdminBusinessWithCountDto>> GetBusinessesWithUser(FilterPaginationDto paginationFilter);
+
     }
 }

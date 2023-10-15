@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using NLayer.Core.DTOs.FilterPaginationDTOs;
 using NLayer.Core.Repositories;
 using System;
 using System.Collections.Generic;
@@ -64,5 +65,7 @@ namespace NLayer.Repository.Repositories
         {
             return _dbSet.Where(expression);
         }
+
+
     }
 }

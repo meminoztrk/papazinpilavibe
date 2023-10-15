@@ -1,5 +1,7 @@
-﻿using NLayer.Core.DTOs.BusinessCommentDTOs;
+﻿using NLayer.Core.DTOs.AdminDTOs;
+using NLayer.Core.DTOs.BusinessCommentDTOs;
 using NLayer.Core.DTOs.BusinessDTOs;
+using NLayer.Core.DTOs.FilterPaginationDTOs;
 using NLayer.Core.Models;
 using System;
 using System.Collections.Generic;
@@ -16,5 +18,6 @@ namespace NLayer.Core.Repositories
         Task<BusinessWithCountBySearching> GetBusinessWithCountBySearching(int page, int take,int provinceId, bool isMostReview, string search);
         Task<List<BusinessByUserDto>> GetBusinessesWithIncludeByUserId(int id);
         Task<BusinessDto> GetBusinessWithIncludeById(int id);
+        Task<AdminBusinessWithCountDto> GetBusinessesWithUser(FilterPaginationDto filterPagination);
     }
 }
