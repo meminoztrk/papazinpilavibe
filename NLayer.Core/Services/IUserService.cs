@@ -7,6 +7,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using NLayer.Core.DTOs.AdminDTOs;
+using NLayer.Core.DTOs.FilterPaginationDTOs;
 
 namespace NLayer.Core.Services
 {
@@ -16,5 +18,6 @@ namespace NLayer.Core.Services
         bool UniqueUsername(string text);
         User GetByUsername(string username);
         Task<CustomResponseDto<UserProfileDto>> GetUserProfileByUserId(string userid);
+        Task<CustomResponseDto<AdminBaseDto<AdminUserDto>>> GetUsers(FilterPaginationDto filterPagination);
     }
 }

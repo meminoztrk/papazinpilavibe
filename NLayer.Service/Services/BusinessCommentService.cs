@@ -1,6 +1,9 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 using NLayer.Core.DTOs;
+using NLayer.Core.DTOs.AdminDTOs;
 using NLayer.Core.DTOs.BusinessCommentDTOs;
+using NLayer.Core.DTOs.FilterPaginationDTOs;
 using NLayer.Core.Models;
 using NLayer.Core.Repositories;
 using NLayer.Core.Services;
@@ -35,6 +38,11 @@ namespace NLayer.Service.Services
         {
             businessComment.UserId = _userRepository.Where(x => x.UserId == businessComment.GuidId).FirstOrDefault().Id;
 
+            if(await _businessCommentRepository.AnyAsync(x=>x.BusinessId == businessComment.BusinessId && x.UserId == businessComment.UserId))
+            {
+                return CustomResponseDto<NoContentDto>.Fail(200,"Daha önce bu işletmeyi zaten yorumladınız!");
+            }
+
             var mappedBusinessComment = _mapper.Map<BusinessComment>(businessComment);
 
             var addedBusinessComment = await AddAsync(mappedBusinessComment);
@@ -47,6 +55,18 @@ namespace NLayer.Service.Services
             }
 
             return CustomResponseDto<NoContentDto>.Success(200);
+        }
+
+        public async Task<CustomResponseDto<AdminBaseDto<AdminBusinessCommentDto>>> GetCommentsWithUser(FilterPaginationDto filterPagination)
+        {
+            var busienssComment = await _businessCommentRepository.GetCommentsWithUser(filterPagination);
+            return CustomResponseDto<AdminBaseDto<AdminBusinessCommentDto>>.Success(200, busienssComment);
+        }
+
+        public async Task<CustomResponseDto<BusinessCommentByUserDto>> GetUserCommentById(int id)
+        {
+            var userComment = await _businessCommentRepository.GetUserCommentById(id);
+            return CustomResponseDto<BusinessCommentByUserDto>.Success(200, userComment);
         }
 
         public async Task<CustomResponseDto<List<BusinessCommentByUserDto>>> GetUserComments(string userid, int page)

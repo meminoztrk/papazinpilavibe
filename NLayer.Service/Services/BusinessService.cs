@@ -39,7 +39,10 @@ namespace NLayer.Service.Services
 
         public async Task<CustomResponseDto<NoContentDto>> AddBusiness(BusinessAddDto business)
         {
-            business.UserId = _userRepository.Where(x => x.UserId == business.GuidId).FirstOrDefault().Id;
+            if(business.GuidId != null)
+            {
+                business.UserId = _userRepository.Where(x => x.UserId == business.GuidId).FirstOrDefault().Id;
+            }
 
             var mappedBusiness = _mapper.Map<Business>(business);
 
@@ -114,9 +117,9 @@ namespace NLayer.Service.Services
             return CustomResponseDto<BusinessWithCountBySearching>.Success(200, businessWithCountBySearching);
         }
 
-        public async Task<CustomResponseDto<AdminBusinessWithCountDto>> GetBusinessesWithUser(FilterPaginationDto paginationFilter)
+        public async Task<CustomResponseDto<AdminBaseDto<AdminBusinessDto>>> GetBusinessesWithUser(FilterPaginationDto paginationFilter)
         {
-            return CustomResponseDto<AdminBusinessWithCountDto>.Success(200, await _businessRepository.GetBusinessesWithUser(paginationFilter));
+            return CustomResponseDto<AdminBaseDto<AdminBusinessDto>>.Success(200, await _businessRepository.GetBusinessesWithUser(paginationFilter));
         }
     }
 }

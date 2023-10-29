@@ -27,9 +27,9 @@ namespace NLayer.Repository.Repositories
         {
         }
 
-        public async Task<AdminBusinessWithCountDto> GetBusinessesWithUser(FilterPaginationDto filterPagination)
+        public async Task<AdminBaseDto<AdminBusinessDto>> GetBusinessesWithUser(FilterPaginationDto filterPagination)
         {
-            AdminBusinessWithCountDto adminBusinessWithCountDto = new AdminBusinessWithCountDto();
+            var model = new AdminBaseDto<AdminBusinessDto>();
             IQueryable<AdminBusinessDto> businessQuery = _context.Business.AsNoTracking().Include(x => x.User).Include(x => x.Province).Where(x => !x.IsDeleted).Select(x => new AdminBusinessDto
             {
                 Id = x.Id,
@@ -77,9 +77,9 @@ namespace NLayer.Repository.Repositories
             {
                 businessQuery = businessQuery.OrderBy(keySelector);
             }
-            adminBusinessWithCountDto.BusinessCount = businessQuery.Count();
-            adminBusinessWithCountDto.AdminBusiness = await businessQuery.Skip((filterPagination.Pagination.Current - 1) * filterPagination.Pagination.PageSize).Take(filterPagination.Pagination.PageSize).ToListAsync();
-            return adminBusinessWithCountDto;
+            model.ItemCount = businessQuery.Count();
+            model.Items = await businessQuery.Skip((filterPagination.Pagination.Current - 1) * filterPagination.Pagination.PageSize).Take(filterPagination.Pagination.PageSize).ToListAsync();
+            return model;
         }
 
         public async Task<BusinessWithCountBySearching> GetBusinessWithCountBySearching(int page, int take,int provinceId, bool isMostReview, string search)
@@ -108,7 +108,7 @@ namespace NLayer.Repository.Repositories
             businessSearching.ProvinceName = _context.Provinces.Where(x=>x.Id == provinceId).FirstOrDefault().MergedArea;
             businessSearching.BusinessesBySearching = Searching.Select(x => new BusinessBySearching {
                 Id = x.Id,
-                BusinessImage = x.BusinessImages.FirstOrDefault().Image,
+                BusinessImage = x.BusinessImages.FirstOrDefault() != null ? x.BusinessImages.FirstOrDefault().Image : "defaultbusiness.png",
                 BusinessType = x.BusinessType,
                 BusinessName = x.BusinessName,
                 TotalComment = x.BusinessComments.Count(),

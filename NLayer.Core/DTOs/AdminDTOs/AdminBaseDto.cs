@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace NLayer.Core.DTOs.AdminDTOs
 {
-    public class AdminBusinessWithCountDto
+    public class AdminBaseDto<T> where T : class
     {
-        public List<AdminBusinessDto> AdminBusiness { get; set; }
-        public int BusinessCount { get; set; }
+        public int ItemCount { get; set; }
+        public List<T> Items { get; set; }
     }
 }

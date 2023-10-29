@@ -128,6 +128,31 @@ namespace NLayer.API.Controllers
             return CreateActionResult(CustomResponseDto<NoContentDto>.Success(204));
         }
 
+        [HttpPost("[action]")]
+        public async Task<IActionResult> GetReviews([FromBody] FilterPaginationDto paginationFilter)
+        {
+            return CreateActionResult(await businessCommentService.GetCommentsWithUser(paginationFilter));
+        }
+
+        [HttpPatch("[action]")]
+        public async Task<IActionResult> UpdateReviewsPatch(int id, JsonPatchDocument entity)
+        {
+            await businessCommentService.UpdatePatchAsync(id, entity);
+            return CreateActionResult(CustomResponseDto<NoContentDto>.Success(204));
+        }
+
+        [HttpPost("[action]")]
+        public async Task<IActionResult> GetUsers([FromBody] FilterPaginationDto paginationFilter)
+        {
+            return CreateActionResult(await userService.GetUsers(paginationFilter));
+        }
+
+        [HttpPatch("[action]")]
+        public async Task<IActionResult> UpdateUserPatch(int id, JsonPatchDocument entity)
+        {
+            await userService.UpdatePatchAsync(id, entity);
+            return CreateActionResult(CustomResponseDto<NoContentDto>.Success(204));
+        }
 
     }
 }
